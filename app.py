@@ -31,13 +31,16 @@ def get_google_results(keyword):
 
 # 🛒 Etsy Keywords
 def get_etsy_keywords(keyword):
+    url = f"https://www.etsy.com/api/v3/ajax/bespoke/member/neu/specs/marketplacesearch/autosuggest?q={keyword}"
     headers = {"User-Agent": "Mozilla/5.0"}
-    url = f"https://www.etsy.com/search?q={keyword}"
+    
     try:
         res = requests.get(url, headers=headers)
-        soup = BeautifulSoup(res.text, "html.parser")
-        titles = soup.find_all("h3")
-        return [t.text.strip() for t in titles[:5]]
+        data = res.json()
+        
+        suggestions = data.get("results", [])
+        return [s["query"] for s in suggestions[:10]]
+    
     except:
         return []
 
